@@ -1,0 +1,75 @@
+<html>
+<head>
+<style>
+canvas{box-shadow:rgba(0,0,0,.4) 0 0 8px;}
+</style>
+</head>
+<body>
+	<canvas width="1200px" id="canvas" height="400px" />
+</body>
+</html>
+<script src="common.js"></script>
+<script src="Sprite.js"></script>
+<script>
+	var canvas = document.getElementById("canvas"),
+		context = canvas.getContext("2d"),
+		W = canvas.width,
+		H = canvas.height;
+
+	var spriteSheet = new Image();
+	spriteSheet.src = "hero_sprites.png";
+
+
+	spriteSheet.onload=function(){
+		var cells=[
+			{x:0,y:288,w:144,h:144},
+			{x:144,y:288,w:144,h:144},
+			{x:288,y:288,w:144,h:144},
+			
+			{x:432,y:288,w:144,h:144},
+			{x:576,y:288,w:144,h:144},
+			{x:720,y:288,w:144,h:144}
+		];
+		
+		var selfAction = {
+			lastAdvance :0,
+			playInterval :100,
+			execute:function(sprite,context,now){
+				if(now-this.lastAdvance>this.playInterval){
+					sprite.painter.advance();
+					this.lastAdvance = now;
+				}
+			}
+		}
+
+		var moveAction = {
+			lastAdvance:0,
+			playInterval:100,
+			execute:function(sprite,context,now){
+				if(now-this.lastAdvance>this.playInterval){
+					if(sprite.painter.cellIndex==0){		
+					   sprite.left -=25;
+					}
+					this.lastAdvance = now;
+				}
+			}
+		}
+
+		var sprite =new Sprite("bit",new SpriteSheetPainter(spriteSheet,cells),[selfAction,moveAction]); 
+		sprite.left=1000;
+
+		var last = 0;
+		function animate(time){
+			if(time-last>100){
+				context.clearRect(0,0,W,H);
+				sprite.update(context,time);
+				sprite.print(context);
+				last = time;
+			}
+			requestAnimationFrame(animate);
+		}
+		requestAnimationFrame(animate);
+
+	}
+
+</script>

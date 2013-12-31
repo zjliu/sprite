@@ -1,0 +1,80 @@
+<!doctype html5>
+<html>
+<head>
+<style>
+canvas{border:1px solid red;}
+</style>
+</head>
+<body>
+<canvas id="mycanvas" width=900px height=600px></canvas>
+<form>
+vertical speed:<input id="verSpeed" type="number" />
+horizontal speed:<input id="horSpeed" type="number" />
+</form>
+<script>
+var mycanvas = $("mycanvas");
+var ctx = mycanvas.getContext("2d");
+
+var iniX = 80;
+var iniY = 290;
+var rad1 = 10;
+var g = 10;
+var vX = 50;
+var vY = 10;
+
+initial(ctx);
+ctx.fillStyle = "#478d8d";
+ctx.fillRect(50,300,700,40);
+
+var cball = new Ball(iniX,iniY,rad1);
+cball.draw(ctx);
+//cball.move();
+
+setInterval(cball.move,100);
+
+function initial(o){
+	o.beginPath();
+	o.lineWidth = 3;
+	o.moveTo(20,20);
+	o.lineTo(800,20);
+	o.moveTo(20,20);
+	o.lineTo(20,500);
+	o.moveTo(800,10);
+	o.lineTo(810,20);
+	o.lineTo(800,30);
+	o.moveTo(10,500);
+	o.lineTo(20,510);
+	o.lineTo(30,500);
+	o.stroke();
+}
+
+function Ball(bx,by,rad){
+	this.bx = bx;
+	this.by = by;
+	this.rad = rad;
+	this.move = horizontalThrow;
+	this.draw = drawBall;
+}
+
+function horizontalThrow(){
+	ctx.clearRect(cball.bx-cball.rad-1,cball.by-cball.rad-1,cball.rad*2+2,cball.rad*2+2);
+	cball.bx += 2;
+	cball.by -= vX*0.1;
+	vX -= 10*0.1;
+	cball.draw(ctx);
+}
+
+function drawBall(o){
+	o.beginPath();
+	o.fillStyle = "#ff870f";
+	o.arc(this.bx,this.by,this.rad,0,2*Math.PI,true);
+	o.fill();
+}
+
+function $(id){
+	return document.getElementById(id);
+}
+
+</script>
+</body>
+</html>
