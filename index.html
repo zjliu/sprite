@@ -1,11 +1,11 @@
 <html>
 <head>
 <style>
-canvas{box-shadow:rgba(0,0,0,.4) 0 0 8px;}
+canvas{box-shadow:rgba(0,0,0,.4) 0 0 8px;background-image:url(bg.jpg);}
 </style>
 </head>
 <body>
-	<canvas width="1200px" id="canvas" height="400px" />
+	<canvas width="900" height="636" id="canvas" />
 </body>
 </html>
 <script src="common.js"></script>
@@ -25,7 +25,6 @@ canvas{box-shadow:rgba(0,0,0,.4) 0 0 8px;}
 			{x:0,y:288,w:144,h:144},
 			{x:144,y:288,w:144,h:144},
 			{x:288,y:288,w:144,h:144},
-			
 			{x:432,y:288,w:144,h:144},
 			{x:576,y:288,w:144,h:144},
 			{x:720,y:288,w:144,h:144}
@@ -35,7 +34,8 @@ canvas{box-shadow:rgba(0,0,0,.4) 0 0 8px;}
 			lastAdvance :0,
 			playInterval :100,
 			execute:function(sprite,context,now){
-				if(now-this.lastAdvance>this.playInterval){
+				var time = now-this.lastAdvance;
+				if(time>this.playInterval){
 					sprite.painter.advance();
 					this.lastAdvance = now;
 				}
@@ -46,9 +46,13 @@ canvas{box-shadow:rgba(0,0,0,.4) 0 0 8px;}
 			lastAdvance:0,
 			playInterval:100,
 			execute:function(sprite,context,now){
-				if(now-this.lastAdvance>this.playInterval){
-					if(sprite.painter.cellIndex==0){		
-					   sprite.left -=25;
+				var time = now-this.lastAdvance;
+				var vx = sprite.velocityX*time/1000;
+				if(time>this.playInterval){
+					if(sprite.left>0){
+						sprite.left -=vx;
+					}else{
+						sprite.left=720;
 					}
 					this.lastAdvance = now;
 				}
@@ -56,20 +60,26 @@ canvas{box-shadow:rgba(0,0,0,.4) 0 0 8px;}
 		}
 
 		var sprite =new Sprite("bit",new SpriteSheetPainter(spriteSheet,cells),[selfAction,moveAction]); 
-		sprite.left=1000;
+		sprite.left=720;
+		sprite.top=310;
+		sprite.velocityX = 100;
 
-		var last = 0;
+		sprite.last=window.performance.now();
 		function animate(time){
-			if(time-last>100){
+			var useTime = time - sprite.last;
+			if(useTime>12){
 				context.clearRect(0,0,W,H);
 				sprite.update(context,time);
 				sprite.print(context);
-				last = time;
+				sprite.last = time;
 			}
 			requestAnimationFrame(animate);
 		}
 		requestAnimationFrame(animate);
-
+		canvas.onclick=function(){
+			sprite.stop = true;
+		}
+		window.sprite=sprite;
 	}
 
 </script>
